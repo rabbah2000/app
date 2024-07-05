@@ -138,6 +138,14 @@ def main_page():
         unsafe_allow_html=True
     )
 
+    # Ajouter le favicon
+    st.markdown(
+        """
+        <link rel="icon" href="https://static.wixstatic.com/media/f3d32c_714ddd4ef56f48fcb2bf8a707c67286a~mv2.jpg/v1/fill/w_188,h_239,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/LOGO-Melint-carr%C3%A9.jpg" type="image/x-icon">
+        """,
+        unsafe_allow_html=True
+    )
+
     # Sélectionner la table à afficher/ajouter des données
     table_selection = st.selectbox("Sélectionnez la table", ["Clients", "Stock"])
 
@@ -186,44 +194,4 @@ def main_page():
         client_id = st.number_input("ID du Client pour téléchargement", min_value=1, step=1)
         pdf_option = st.selectbox("Sélectionnez le PDF à télécharger", ["la formulaire client", "le rapport de diagnostique"])
         pdf_number = 1 if pdf_option == "la formulaire client" else 2
-        download_button = st.button("Télécharger le PDF")
-
-        if download_button:
-            pdf_data = get_client_pdf(client_id, pdf_number)
-            if pdf_data:
-                st.download_button(
-                    label="Télécharger le PDF",
-                    data=pdf_data,
-                    file_name=f'client_{client_id}_{pdf_option.replace(" ", "_")}.pdf',
-                    mime='application/pdf'
-                )
-            else:
-                st.error(f"Aucun {pdf_option} trouvé pour cet ID de client.")
-
-    elif table_selection == "Stock":
-        st.header("Ajouter un SPART PART")
-        with st.form(key='add_stock'):
-            part_number = st.text_input("Part Number")
-            description = st.text_input("Description")
-            stock_quantity = st.number_input("Stock Quantity", min_value=0, step=1)
-            submit_button = st.form_submit_button(label='Ajouter')
-
-            if submit_button:
-                add_stock(part_number, description, stock_quantity)
-                st.success("Produit ajouté au stock avec succès !")
-
-        st.header("Tableau du piéces de rechange")
-        stock_df = load_stock()
-        st.dataframe(stock_df)
-
-# Authentification et accès conditionnel
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
-
-if st.session_state["authenticated"]:
-    main_page()
-else:
-    login()
-
-# Fermer la connexion à la base de données
-conn.close()
+        download_button = st.button("
