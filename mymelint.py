@@ -132,7 +132,7 @@ def main_page():
             footer {visibility: hidden;}
         </style>
         <div style="display: flex; justify-content: center; align-items: center; padding-bottom: 2rem;">
-            <img src="https://www.example.com/logo.png" alt="Logo" width="200">
+            <img src="https://github.com/rabbah2000/app/blob/main/LOGO-Melint-carr%C3%A9.png" alt="Logo" width="200">
         </div>
         """,
         unsafe_allow_html=True
