@@ -46,9 +46,10 @@ def load_clients():
     data = c.fetchall()
     return pd.DataFrame(data, columns=['ID', 'REF', 'Compte', 'Affaire', 'Marque', 'SN_or_MAC', 'Date_Reception_Sav', 'Bon_entree_ERM', 'Motif', 'Besoin_piece_importee', 'Date_sortie_sav', 'Suivi_Spare_Part', 'Bon_sortie_ERM', 'Statut', 'Commentaire'])
 
-def add_client(ref, compte, affaire, marque, sn_or_mac, date_reception_sav, bon_entree_erm, motif, besoin_piece_importee, date_sortie_sav, suivi_spare_part, bon_sortie_erm, statut, commentaire, pdf_data1):
+def add_client(ref, compte, affaire, marque, sn_or_mac, date_reception_sav, bon_entree_erm, motif, besoin_piece_importee, date_sortie_sav, suivi_spare_part, bon_sortie_erm, statut, commentaire, pdf_data1, part_number):
     c.execute("INSERT INTO clients (REF, Compte, Affaire, Marque, SN_or_MAC, Date_Reception_Sav, Bon_entree_ERM, Motif, Besoin_piece_importee, Date_sortie_sav, Suivi_Spare_Part, Bon_sortie_ERM, Statut, Commentaire, PDF1) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (ref, compte, affaire, marque, sn_or_mac, date_reception_sav, bon_entree_erm, motif, besoin_piece_importee, date_sortie_sav, suivi_spare_part, bon_sortie_erm, statut, commentaire, pdf_data1))
     conn.commit()
+    subtract_stock(part_number, 1)  # Soustraire une unité du stock
 
 def add_second_pdf(client_id, pdf_data2):
     c.execute("UPDATE clients SET PDF2 = ? WHERE id = ?", (pdf_data2, client_id))
@@ -74,13 +75,14 @@ def update_stock(id, stock_quantity):
     c.execute("UPDATE stock SET Stock_quantity = ? WHERE id = ?", (stock_quantity, id))
     conn.commit()
 
-def subtract_stock(id, quantity):
-    c.execute("SELECT Stock_quantity FROM stock WHERE id = ?", (id,))
+def subtract_stock(part_number, quantity):
+    c.execute("SELECT Stock_quantity FROM stock WHERE Part_number = ?", (part_number,))
     current_quantity = c.fetchone()[0]
     new_quantity = current_quantity - quantity
     if new_quantity < 0:
         new_quantity = 0
-    update_stock(id, new_quantity)
+    c.execute("UPDATE stock SET Stock_quantity = ? WHERE Part_number = ?", (new_quantity, part_number))
+    conn.commit()
 
 # Interface Streamlit
 st.title("Gestion des Clients et du Stock")
@@ -106,12 +108,14 @@ if table_selection == "Clients":
         statut = st.text_input("Statut")
         commentaire = st.text_area("Commentaire")
         pdf1 = st.file_uploader("Télécharger un fichier PDF", type=["pdf"])
+        stock_df = load_stock()
+        part_number = st.selectbox("Sélectionnez le numéro de pièce", stock_df["Part_number"].values)
         submit_button = st.form_submit_button(label='Ajouter')
 
         if submit_button:
             pdf_data1 = pdf1.read() if pdf1 is not None else None
-            add_client(ref, compte, affaire, marque, sn_or_mac, date_reception_sav, bon_entree_erm, motif, besoin_piece_importee, date_sortie_sav, suivi_spare_part, bon_sortie_erm, statut, commentaire, pdf_data1)
-            st.success("Client ajouté avec succès !")
+            add_client(ref, compte, affaire, marque, sn_or_mac, date_reception_sav, bon_entree_erm, motif, besoin_piece_importee, date_sortie_sav, suivi_spare_part, bon_sortie_erm, statut, commentaire, pdf_data1, part_number)
+            st.success("Client ajouté avec succès et stock mis à jour !")
 
     st.header("Tableau des Clients")
     clients_df = load_clients()
@@ -159,22 +163,6 @@ elif table_selection == "Stock":
     st.header("Tableau du Stock")
     stock_df = load_stock()
     st.dataframe(stock_df)
-
-    st.header("Modifier la Quantité en Stock")
-    stock_id = st.selectbox("Sélectionnez un produit", stock_df["ID"].values)
-    selected_stock = stock_df[stock_df["ID"] == stock_id]
-    st.write("Part Number:", selected_stock["Part_number"].values[0])
-    st.write("Description:", selected_stock["Description"].values[0])
-    current_quantity = selected_stock["Stock_quantity"].values[0]
-    st.write("Quantité actuelle en stock:", current_quantity)
-    subtract_quantity = st.number_input("Quantité à soustraire", min_value=0, max_value=current_quantity, step=1)
-    update_button = st.button("Soustraire du Stock")
-
-    if update_button:
-        subtract_stock(stock_id, subtract_quantity)
-        st.success("Quantité en stock mise à jour avec succès !")
-        stock_df = load_stock()
-        st.dataframe(stock_df)
 
 # Fermer la connexion à la base de données
 conn.close()
