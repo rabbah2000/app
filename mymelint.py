@@ -139,9 +139,9 @@ def main_page():
     )
 
     # Sélectionner la table à afficher/ajouter des données
-    table_selection = st.selectbox("Sélectionnez la table", ["Clients", "Stock"])
+    table_selection = st.selectbox("Sélectionnez la table", ["Tableau des articles SAV", "Tableau des piéce de rechange"])
 
-    if table_selection == "Clients":
+    if table_selection == "Tableau des articles SAV":
         st.header("Ajouter un article SAV")
         with st.form(key='add_client'):
             ref = st.text_input("REF")
@@ -200,7 +200,7 @@ def main_page():
             else:
                 st.error(f"Aucun {pdf_option} trouvé pour cet ID de client.")
 
-    elif table_selection == "Stock":
+    elif table_selection == "Tableau des piéce de rechange":
         st.header("Ajouter un SPART PART")
         with st.form(key='add_stock'):
             part_number = st.text_input("Part Number")
