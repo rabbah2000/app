@@ -138,8 +138,11 @@ def main_page():
         unsafe_allow_html=True
     )
 
+    # Ajouter le favicon
+
+
     # Sélectionner la table à afficher/ajouter des données
-    table_selection = st.selectbox("Sélectionnez la table", ["Clients", "Stock"])
+    table_selection = st.selectbox("Sélectionnez la table", ["Tableau des articles SAV", "Tableau des piéces de rechange"])
 
     if table_selection == "Clients":
         st.header("Ajouter un article SAV")
@@ -200,6 +203,14 @@ def main_page():
             else:
                 st.error(f"Aucun {pdf_option} trouvé pour cet ID de client.")
 
+        # Ajouter une section pour charger un fichier Excel
+        st.header("Charger les données à partir d'un fichier Excel")
+        excel_file = st.file_uploader("Téléchargez le fichier Excel", type=["xlsx"])
+
+        if excel_file:
+            df_excel = pd.read_excel(excel_file)
+            st.dataframe(df_excel)
+
     elif table_selection == "Stock":
         st.header("Ajouter un SPART PART")
         with st.form(key='add_stock'):
@@ -215,6 +226,14 @@ def main_page():
         st.header("Tableau du piéces de rechange")
         stock_df = load_stock()
         st.dataframe(stock_df)
+
+        # Ajouter une section pour charger un fichier Excel
+        st.header("Charger les données à partir d'un fichier Excel")
+        excel_file = st.file_uploader("Téléchargez le fichier Excel", type=["xlsx"])
+
+        if excel_file:
+            df_excel = pd.read_excel(excel_file)
+            st.dataframe(df_excel)
 
 # Authentification et accès conditionnel
 if "authenticated" not in st.session_state:
