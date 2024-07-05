@@ -113,13 +113,36 @@ def login():
 
 # Page principale après authentification
 def main_page():
-    st.title("Gestion des Clients et du Stock")
+    st.title("Gestion Melint SAV")
+
+    # Ajouter un logo en haut de la page
+    st.markdown(
+        """
+        <style>
+            .reportview-container {
+                background: white;
+            }
+            .sidebar .sidebar-content {
+                background: white;
+            }
+            .reportview-container .main .block-container {
+                padding-top: 2rem;
+            }
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+        </style>
+        <div style="display: flex; justify-content: center; align-items: center; padding-bottom: 2rem;">
+            <img src="https://www.example.com/logo.png" alt="Logo" width="200">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Sélectionner la table à afficher/ajouter des données
     table_selection = st.selectbox("Sélectionnez la table", ["Clients", "Stock"])
 
     if table_selection == "Clients":
-        st.header("Ajouter un Client et Télécharger un PDF")
+        st.header("Ajouter un article SAV")
         with st.form(key='add_client'):
             ref = st.text_input("REF")
             compte = st.text_input("Compte")
@@ -137,7 +160,7 @@ def main_page():
             commentaire = st.text_area("Commentaire")
             stock_df = load_stock()
             part_number = st.selectbox("Sélectionnez le numéro de pièce (ou laissez vide)", [""] + stock_df["Part_number"].tolist())
-            pdf1 = st.file_uploader("Télécharger un fichier PDF", type=["pdf"])
+            pdf1 = st.file_uploader("Télécharger formulaire clinet", type=["pdf"])
             submit_button = st.form_submit_button(label='Ajouter')
 
             if submit_button:
@@ -145,11 +168,11 @@ def main_page():
                 add_client(ref, compte, affaire, marque, sn_or_mac, date_reception_sav, bon_entree_erm, motif, besoin_piece_importee, date_sortie_sav, suivi_spare_part, bon_sortie_erm, statut, commentaire, part_number, pdf_data1)
                 st.success("Client ajouté avec succès et stock mis à jour !")
 
-        st.header("Tableau des Clients")
+        st.header("Inventaire de piéces de rechange")
         clients_df = load_clients()
         st.dataframe(clients_df)
 
-        st.header("Ajouter un deuxième PDF à un client existant")
+        st.header("Ajouter le rapport de diagnostique")
         client_id = st.selectbox("Sélectionnez un client", clients_df["ID"].values)
         pdf2 = st.file_uploader("Télécharger le deuxième fichier PDF", type=["pdf"])
         add_pdf_button = st.button("Ajouter le deuxième PDF")
@@ -159,9 +182,10 @@ def main_page():
             add_second_pdf(client_id, pdf_data2)
             st.success("Deuxième PDF ajouté avec succès !")
 
-        st.header("Télécharger un PDF stocké")
+        st.header("Télécharger la formulaire client et le rapport de diagnostique")
         client_id = st.number_input("ID du Client pour téléchargement", min_value=1, step=1)
-        pdf_number = st.selectbox("Sélectionnez le PDF à télécharger", [1, 2])
+        pdf_option = st.selectbox("Sélectionnez le PDF à télécharger", ["la formulaire client", "le rapport de diagnostique"])
+        pdf_number = 1 if pdf_option == "la formulaire client" else 2
         download_button = st.button("Télécharger le PDF")
 
         if download_button:
@@ -170,14 +194,14 @@ def main_page():
                 st.download_button(
                     label="Télécharger le PDF",
                     data=pdf_data,
-                    file_name=f'client_{client_id}_pdf{pdf_number}.pdf',
+                    file_name=f'client_{client_id}_{pdf_option.replace(" ", "_")}.pdf',
                     mime='application/pdf'
                 )
             else:
-                st.error(f"Aucun PDF{pdf_number} trouvé pour cet ID de client.")
+                st.error(f"Aucun {pdf_option} trouvé pour cet ID de client.")
 
     elif table_selection == "Stock":
-        st.header("Ajouter un Produit au Stock")
+        st.header("Ajouter un SPART PART")
         with st.form(key='add_stock'):
             part_number = st.text_input("Part Number")
             description = st.text_input("Description")
@@ -188,7 +212,7 @@ def main_page():
                 add_stock(part_number, description, stock_quantity)
                 st.success("Produit ajouté au stock avec succès !")
 
-        st.header("Tableau du Stock")
+        st.header("Tableau du piéces de rechange")
         stock_df = load_stock()
         st.dataframe(stock_df)
 
