@@ -138,13 +138,7 @@ def main_page():
         unsafe_allow_html=True
     )
 
-    # Ajouter le favicon
-    st.markdown(
-        """
-        <link rel="icon" href="https://static.wixstatic.com/media/f3d32c_714ddd4ef56f48fcb2bf8a707c67286a~mv2.jpg/v1/fill/w_188,h_239,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/LOGO-Melint-carr%C3%A9.jpg" type="image/x-icon">
-        """,
-        unsafe_allow_html=True
-    )
+
 
     # Sélectionner la table à afficher/ajouter des données
     table_selection = st.selectbox("Sélectionnez la table", ["Clients", "Stock"])
