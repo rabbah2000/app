@@ -115,15 +115,15 @@ def login():
 def main_page():
     st.title("Gestion Melint SAV")
 
-    # Ajouter un logo en haut de la page
+    # Ajouter un logo en haut de la page et définir le fond blanc
     st.markdown(
         """
         <style>
             .reportview-container {
-                background: white;
+                background-color: white;
             }
             .sidebar .sidebar-content {
-                background: white;
+                background-color: white;
             }
             .reportview-container .main .block-container {
                 padding-top: 2rem;
@@ -132,7 +132,7 @@ def main_page():
             footer {visibility: hidden;}
         </style>
         <div style="display: flex; justify-content: center; align-items: center; padding-bottom: 2rem;">
-            <img src="https://github.com/rabbah2000/app/blob/main/LOGO-Melint-carr%C3%A9.png" alt="Logo" width="200">
+            <img src="https://raw.githubusercontent.com/votre-utilisateur/votre-depot/branche/assets/logo.png" alt="Logo" width="200">
         </div>
         """,
         unsafe_allow_html=True
