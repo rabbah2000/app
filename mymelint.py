@@ -132,7 +132,7 @@ def main_page():
             footer {visibility: hidden;}
         </style>
         <div style="display: flex; justify-content: center; align-items: center; padding-bottom: 2rem;">
-            <img src="https://www.example.com/logo.png" alt="Logo" width="200">
+            <img src="https://static.wixstatic.com/media/f3d32c_c3a12fb4cf6642419034f4a981afd6f8~mv2.jpg/v1/fill/w_185,h_233,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/f3d32c_c3a12fb4cf6642419034f4a981afd6f8~mv2.jpg" alt="Logo" width="200">
         </div>
         """,
         unsafe_allow_html=True
