@@ -113,7 +113,7 @@ def login():
 
 # Page principale après authentification
 def main_page():
-    st.title("Gestion Melint SAV")
+    st.title("                    Gestion Melint SAV")
 
     # Ajouter un logo en haut de la page et définir le fond blanc
     st.markdown(
