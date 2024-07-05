@@ -64,7 +64,7 @@ if download_button:
     pdf_data = get_pdf(client_id)
     if pdf_data:
         st.download_button(
-            label="Télécharger le PDF",
+            label="Finaliser le téléchargement",
             data=pdf_data,
             file_name=f'client_{client_id}.pdf',
             mime='application/pdf'
